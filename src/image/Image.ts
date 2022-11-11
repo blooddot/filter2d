@@ -1,16 +1,16 @@
 import { initWebGL } from "../utils/util.js";
 
 //@ts-ignore
-window.renderImage = function (name: string, uniforms?: Record<string, [number, number, number]>) {
-    function inputToRange(input, min, max) {
+window.renderImage = function (name: string, uniforms?: Record<string, [number, number, number] | number>) {
+    function inputToRange(input: number, min: number, max: number) {
         return ((input - min) / (max - min) * 100).toFixed(2);
     }
 
-    function rangeToInput(range, min, max) {
+    function rangeToInput(range: number, min: number, max: number) {
         return (range / 100 * (max - min) + min).toFixed(2);
     }
 
-    function createNumberInput(name: string, value: unknown, min, max) {
+    function createNumberInput(name: string, value: unknown, min?: number, max?: number) {
         const container = document.createElement('div');
         container.className = 'row-content';
 
@@ -23,39 +23,50 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
         input.className = "input-number";
         container.appendChild(input);
         input.type = 'text';
-        input.min = String(min);
-        input.max = String(max);
+        if (min !== undefined) {
+            input.min = String(min);
+        }
+
+        if (max !== undefined) {
+            input.max = String(max);
+        }
+
         input.value = value as string;
 
-        const range = document.createElement('input');
-        range.className = "input-range";
-        container.appendChild(range);
-        range.type = 'range';
-        range.value = inputToRange(value, min, max);
+        let range
+        if (min !== undefined && max !== undefined) {
+            range = document.createElement('input');
+            range.className = "input-range";
+            container.appendChild(range);
+            range.type = 'range';
+            range.value = inputToRange(value as number, min, max);
+
+            range.addEventListener('input', (e) => {
+                const value = rangeToInput(range.value, min, max);
+                if (uniforms[name][0] === value) return;
+
+                uniforms[name][0] = value;
+                input.value = value;
+
+                render();
+            });
+        }
 
         input.addEventListener('input', (e: InputEvent) => {
             input.value = input.value === '' ? '0' : input.value;
             let value = +input.value;
-            if (value < min || value > max) {
-                value = value < min ? min : max;
-                input.value = String(value);
-            }
-
+            if (Number.isNaN(value)) return;
+            value = min !== undefined && value < min ? min : value;
+            value = max !== undefined && value > max ? max : value;
             if (uniforms[name][0] === value) return;
+
+            input.value = String(value);
 
             uniforms[name][0] = value;
             input.value = String(value);
-            range.value = inputToRange(value, min, max);
-            render();
-        });
-
-        range.addEventListener('input', (e) => {
-            const value = rangeToInput(range.value, min, max);
-            if (uniforms[name][0] === value) return;
-
-            uniforms[name][0] = value;
-            input.value = value;
-
+            if (range) {
+                range.value = inputToRange(value, min, max);
+            }
             render();
         });
 
@@ -69,7 +80,10 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
     if (uniforms) {
         const container = document.getElementById('input-uniforms');
         Object.keys(uniforms).forEach(key => {
-            const numberInput = createNumberInput(key, ...uniforms[key]);
+            const value = uniforms[key];
+            if (!Array.isArray(value)) return;
+
+            const numberInput = createNumberInput(key, ...value);
             container.appendChild(numberInput);
         });
     }
@@ -77,7 +91,7 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
     render();
 }
 
-async function init(name: string, uniforms?: Record<string, [number, number, number]>) {
+async function init(name: string, uniforms?: Record<string, [number, number, number] | number>) {
     const { gl, program } = await initWebGL(name);
 
     const vertexCount = initVertexBuffers(gl, program);
@@ -88,11 +102,11 @@ async function init(name: string, uniforms?: Record<string, [number, number, num
     initTexture(gl, program, vertexCount);
 }
 
-function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms?: Record<string, [number, number, number]>) {
+function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms?: Record<string, [number, number, number] | number>) {
     if (!uniforms) return;
 
     Object.keys(uniforms).forEach((key) => {
-        const [value] = uniforms[key];
+        const value = Array.isArray(uniforms[key]) ? uniforms[key][0] : uniforms[key];
         const location = gl.getUniformLocation(program, key);
         if (Array.isArray(value)) {
             switch (value.length) {

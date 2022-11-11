@@ -27,34 +27,44 @@ window.renderImage = function (name, uniforms) {
         input.className = "input-number";
         container.appendChild(input);
         input.type = 'text';
-        input.min = String(min);
-        input.max = String(max);
+        if (min !== undefined) {
+            input.min = String(min);
+        }
+        if (max !== undefined) {
+            input.max = String(max);
+        }
         input.value = value;
-        const range = document.createElement('input');
-        range.className = "input-range";
-        container.appendChild(range);
-        range.type = 'range';
-        range.value = inputToRange(value, min, max);
+        let range;
+        if (min !== undefined && max !== undefined) {
+            range = document.createElement('input');
+            range.className = "input-range";
+            container.appendChild(range);
+            range.type = 'range';
+            range.value = inputToRange(value, min, max);
+            range.addEventListener('input', (e) => {
+                const value = rangeToInput(range.value, min, max);
+                if (uniforms[name][0] === value)
+                    return;
+                uniforms[name][0] = value;
+                input.value = value;
+                render();
+            });
+        }
         input.addEventListener('input', (e) => {
             input.value = input.value === '' ? '0' : input.value;
             let value = +input.value;
-            if (value < min || value > max) {
-                value = value < min ? min : max;
-                input.value = String(value);
-            }
+            if (Number.isNaN(value))
+                return;
+            value = min !== undefined && value < min ? min : value;
+            value = max !== undefined && value > max ? max : value;
             if (uniforms[name][0] === value)
                 return;
+            input.value = String(value);
             uniforms[name][0] = value;
             input.value = String(value);
-            range.value = inputToRange(value, min, max);
-            render();
-        });
-        range.addEventListener('input', (e) => {
-            const value = rangeToInput(range.value, min, max);
-            if (uniforms[name][0] === value)
-                return;
-            uniforms[name][0] = value;
-            input.value = value;
+            if (range) {
+                range.value = inputToRange(value, min, max);
+            }
             render();
         });
         return container;
@@ -65,7 +75,10 @@ window.renderImage = function (name, uniforms) {
     if (uniforms) {
         const container = document.getElementById('input-uniforms');
         Object.keys(uniforms).forEach(key => {
-            const numberInput = createNumberInput(key, ...uniforms[key]);
+            const value = uniforms[key];
+            if (!Array.isArray(value))
+                return;
+            const numberInput = createNumberInput(key, ...value);
             container.appendChild(numberInput);
         });
     }
@@ -84,7 +97,7 @@ function initUniforms(gl, program, uniforms) {
     if (!uniforms)
         return;
     Object.keys(uniforms).forEach((key) => {
-        const [value] = uniforms[key];
+        const value = Array.isArray(uniforms[key]) ? uniforms[key][0] : uniforms[key];
         const location = gl.getUniformLocation(program, key);
         if (Array.isArray(value)) {
             switch (value.length) {
