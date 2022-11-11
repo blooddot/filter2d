@@ -17,12 +17,6 @@
         <div class="col-content">
             <div class="row-content">
                 <iframe id="webgl"></iframe>
-                <figure>
-                    <figcaption>Typescript:</figcaption>
-                    <pre class="tscode-container">
-                        <code id="tscode" class="language-TypeScript"></code>
-                    </pre>
-                </figure>
             </div>
             <div class="row-content">
                 <figure class="glsl-figure">
@@ -44,14 +38,14 @@
 <script>
     const array = [
         [
-            'Image Filters',
+            'image filters',
             [
-                'Normal',
-                ['Normal', 'src/image/Normal/Normal.html']
+                'normal',
+                ['normal', 'src/image/normal/normal.html']
             ],
             [
-                'Color Adjustment Filters',
-                ['ChannelMixFilter', 'src/image/ColorAdjustment/ChannelMixFilter/ChannelMixFilter.html'],
+                'adjust',
+                ['brightness', 'src/image/adjust/brightness/brightness.html'],
             ],
             // [
             //     'Distortion and Warping Filters',
@@ -77,11 +71,32 @@
         return details;
     }
 
+    function renderItem(target) {
+        if (selectArrow) {
+            selectArrow.className = 'sub-arrow';
+        }
+        selectArrow = target;
+        selectArrow.className = 'select';
+        webgl.src = selectArrow.href;
+        const dir = selectArrow.href.split('/').slice(0, -1).join('/');
+
+        fetchCode(`${dir}/${selectArrow.text}.vs`).then(value => {
+            vscode.innerHTML = value;
+            hljs.highlightElement(vscode);
+        });
+
+        fetchCode(`${dir}/${selectArrow.text}.fs`).then(value => {
+            fscode.innerHTML = value;
+            hljs.highlightElement(fscode);
+        });
+    }
+
     const course = document.getElementById('course');
     const webgl = document.getElementById('webgl');
     const tscode = document.getElementById('tscode')
     const vscode = document.getElementById('vscode')
     const fscode = document.getElementById('fscode')
+
     let selectArrow;
     array.forEach((element, index) => {
         const [title, ...items] = element;
@@ -104,32 +119,15 @@
 
                 a.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (selectArrow) {
-                        selectArrow.className = 'sub-arrow';
-                    }
-                    selectArrow = e.target;
-                    selectArrow.className = 'select';
-                    webgl.src = selectArrow.href;
-                    const dir = selectArrow.href.split('/').slice(0, -1).join('/');
 
-                    fetchCode(`${dir}/${selectArrow.text}.ts`).then(value => {
-                        tscode.innerHTML = value;
-                        hljs.highlightElement(tscode);
-                    });
-
-                    fetchCode(`${dir}/${selectArrow.text}.vs`).then(value => {
-                        vscode.innerHTML = value;
-                        hljs.highlightElement(vscode);
-                    });
-
-                    fetchCode(`${dir}/${selectArrow.text}.fs`).then(value => {
-                        fscode.innerHTML = value;
-                        hljs.highlightElement(fscode);
-                    });
+                    renderItem(e.target);
                 }, false);
             });
         });
     });
+
+    const first = document.querySelector('.sub-arrow');
+    renderItem(first);
 </script>
 <style>
     body {
@@ -180,13 +178,13 @@
         flex-direction: row;
     }
 
-    div .col-content {
+    div.col-content {
         display: flex;
         flex-direction: column;
     }
 
     div.content iframe {
-        width: 400px;
+        width: 800px;
         height: 486px;
     }
 

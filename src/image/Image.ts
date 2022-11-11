@@ -1,17 +1,61 @@
 import { initWebGL } from "../utils/util.js";
 
 //@ts-ignore
-export async function renderImage(name: string) {
+export async function renderImage(name: string, uniforms?: Record<string, unknown>) {
     const { gl, program } = await initWebGL(name);
 
     const vertexCount = initVertexBuffers(gl, program);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
+    initUniforms(gl, program, uniforms);
     initTexture(gl, program, vertexCount);
 }
 
-const initVertexBuffers = (gl: WebGLRenderingContext, program: WebGLProgram) => {
+function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms?: Record<string, unknown>) {
+    if (!uniforms) return;
+
+    Object.keys(uniforms).forEach((key) => {
+        const value = uniforms[key];
+        const location = gl.getUniformLocation(program, key);
+        if (Array.isArray(value)) {
+            switch (value.length) {
+                case 1:
+                    gl.uniform1f(location, value[0]);
+                    break;
+                case 2:
+                    gl.uniform2f(location, value[0], value[1]);
+                    break;
+                case 3:
+                    gl.uniform3f(location, value[0], value[1], value[2]);
+                    break;
+                case 4:
+                    gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+                default:
+                    break;
+            }
+            return;
+        }
+
+        switch (typeof value) {
+            case "boolean":
+                gl.uniform1i(location, value ? 1 : 0);
+                break;
+            case "number":
+                gl.uniform1f(location, value);
+                break;
+            case "string":
+                gl.uniform1f(location, +value);
+                break;
+            default:
+                break;
+        }
+    });
+    const u_LightColor = gl.getUniformLocation(program, 'u_LightColor');
+    gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);  //设置光线颜色（白色）
+}
+
+function initVertexBuffers(gl: WebGLRenderingContext, program: WebGLProgram) {
     //顶点坐标，纹理坐标
     const verticesTexCoords = new Float32Array([
         -0.8, 0.8, 0.0, 1.0,
@@ -41,7 +85,7 @@ const initVertexBuffers = (gl: WebGLRenderingContext, program: WebGLProgram) => 
     return vertexCount;
 };
 
-const initTexture = (gl: WebGLRenderingContext, program: WebGLProgram, n: number) => {
+function initTexture(gl: WebGLRenderingContext, program: WebGLProgram, n: number) {
     const texture = gl.createTexture(); //创建纹理对象
     const u_Sampler = gl.getUniformLocation(program, 'u_Sampler');//获取u_Sampler的存储位置
     const image = new Image();  //创建image对象
@@ -49,7 +93,7 @@ const initTexture = (gl: WebGLRenderingContext, program: WebGLProgram, n: number
     image.src = '../../../../resources/hello-world.png';
 };
 
-const loadTexture = (gl: WebGLRenderingContext, program: WebGLProgram, n: number, texture: WebGLTexture, u_Sampler: WebGLUniformLocation, image: HTMLImageElement) => {
+function loadTexture(gl: WebGLRenderingContext, program: WebGLProgram, n: number, texture: WebGLTexture, u_Sampler: WebGLUniformLocation, image: HTMLImageElement) {
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  //对纹理图像进行y轴反转
     gl.activeTexture(gl.TEXTURE0);  //开启0号纹理单元
     gl.bindTexture(gl.TEXTURE_2D, texture); //向target绑定纹理对象

@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { renderImage } from "../Image.js";
+import { renderImage } from "../image.js";
 window.onload = function () {
     return __awaiter(this, void 0, void 0, function* () {
         renderImage("Normal");
