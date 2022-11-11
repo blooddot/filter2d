@@ -16,7 +16,7 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>hue (色调)</h1>
+                <h1>noise (噪声)</h1>
                 <figure id="input-uniforms" className="figure-uniforms"></figure>
             </div>
         </div>
@@ -25,7 +25,9 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage('hue', { u_Hue: [0.5, -1, 1] });
+            window.renderImage('noise', {
+                u_Amount: [0.5, 0, 1]
+            });
         }
     </script>
 </body>

@@ -119,7 +119,7 @@ function initUniforms(gl, program, uniforms) {
         }
         switch (typeof value) {
             case "boolean":
-                gl.uniform1i(location, value ? 1 : 0);
+                gl.uniform1f(location, value ? 1 : 0);
                 break;
             case "number":
                 gl.uniform1f(location, value);
