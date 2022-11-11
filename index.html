@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webgl</title>
+    <link rel="stylesheet" href="./libs/highlight/github.min.css">
+    <script src="./libs/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div id="course" class="sidenav"></div>
+    <div class="content">
+        <div class="col-content">
+            <div class="row-content">
+                <iframe id="webgl"></iframe>
+                <figure>
+                    <figcaption>Typescript:</figcaption>
+                    <pre class="tscode-container">
+                        <code id="tscode" class="language-TypeScript"></code>
+                    </pre>
+                </figure>
+            </div>
+            <div class="row-content">
+                <figure class="glsl-figure">
+                    <figcaption>Vertex:</figcaption>
+                    <pre class="vscode-container">
+                        <code id="vscode" class="language-glsl hljs"></code>
+                    </pre>
+                </figure>
+                <figure class="glsl-figure">
+                    <figcaption>Fragment:</figcaption>
+                    <pre class="fscode-container">
+                        <code id="fscode" class="language-glsl hljs"></code>
+                    </pre>
+                </figure>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const array = [
+        [
+            'Image Filters',
+            [
+                'Normal',
+                ['Normal', 'src/image/Normal/Normal.html']
+            ],
+            [
+                'Color Adjustment Filters',
+                ['ChannelMixFilter', 'src/image/ColorAdjustment/ChannelMixFilter/ChannelMixFilter.html'],
+            ],
+            // [
+            //     'Distortion and Warping Filters',
+            // ],
+        ]
+    ];
+
+    async function fetchCode(path) {
+        return fetch(path).then(res => {
+            if (!res.ok) return '';
+
+            return res.text()
+        });
+    }
+
+    function createDetails(title, index, detailsClass = '') {
+        const details = document.createElement('details');
+        details.className = detailsClass;
+        const summary = document.createElement('summary');
+        details.appendChild(summary);
+        summary.textContent = title;
+        summary.className = index % 2 === 1 ? "active" : "";
+        return details;
+    }
+
+    const course = document.getElementById('course');
+    const webgl = document.getElementById('webgl');
+    const tscode = document.getElementById('tscode')
+    const vscode = document.getElementById('vscode')
+    const fscode = document.getElementById('fscode')
+    let selectArrow;
+    array.forEach((element, index) => {
+        const [title, ...items] = element;
+        const details = createDetails(title, index);
+        course.appendChild(details);
+
+        items.forEach(value => {
+            const [subTitle, ...subItems] = value;
+            const subDetails = createDetails(subTitle, index, "sub-details");
+            details.appendChild(subDetails);
+
+            subItems.forEach(value => {
+                const [name, href] = value;
+                const a = document.createElement('a');
+                subDetails.appendChild(a);
+                a.text = name;
+                a.href = href;
+                a.nodeValue = href;
+                a.className = 'sub-arrow';
+
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (selectArrow) {
+                        selectArrow.className = 'sub-arrow';
+                    }
+                    selectArrow = e.target;
+                    selectArrow.className = 'select';
+                    webgl.src = selectArrow.href;
+                    const dir = selectArrow.href.split('/').slice(0, -1).join('/');
+
+                    fetchCode(`${dir}/${selectArrow.text}.ts`).then(value => {
+                        tscode.innerHTML = value;
+                        hljs.highlightElement(tscode);
+                    });
+
+                    fetchCode(`${dir}/${selectArrow.text}.vs`).then(value => {
+                        vscode.innerHTML = value;
+                        hljs.highlightElement(vscode);
+                    });
+
+                    fetchCode(`${dir}/${selectArrow.text}.fs`).then(value => {
+                        fscode.innerHTML = value;
+                        hljs.highlightElement(fscode);
+                    });
+                }, false);
+            });
+        });
+    });
+</script>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+    }
+
+    div.sidenav {
+        list-style-type: none;
+        margin: 0;
+        padding-left: 5px;
+        width: 25%;
+        background-color: #f1f1f1;
+        position: fixed;
+        height: 100%;
+        overflow: auto;
+    }
+
+    div.sidenav a {
+        display: block;
+        color: #000;
+        padding: 8px 16px;
+        text-decoration: none;
+    }
+
+    div.sidenav summary.active {
+        background-color: #d5d5d5;
+    }
+
+    div.sidenav a.select {
+        background-color: #f5c242;
+        color: white;
+    }
+
+    div.sidenav a:hover:not(.active) {
+        background-color: #f5c242;
+        color: white;
+    }
+
+    div.content {
+        display: flex;
+        margin-left: 25%;
+        padding: 1px 16px;
+    }
+
+    div.row-content {
+        display: flex;
+        flex-direction: row;
+    }
+
+    div .col-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    div.content iframe {
+        width: 400px;
+        height: 486px;
+    }
+
+    .tscode-container {
+        margin-top: 0;
+        width: 700px;
+        height: 420px;
+    }
+
+    .vscode-container {
+        margin-top: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .fscode-container {
+        margin-top: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .glsl-figure {
+        margin-left: 0;
+    }
+
+    figcaption {
+        margin-bottom: 0;
+    }
+
+    div.content code {
+        background-color: #f3f3f3;
+        width: 100%;
+        height: 100%;
+    }
+
+    .sub-details {
+        margin-left: 20px;
+    }
+
+    .sub-arrow {
+        margin-left: 20px;
+    }
+
+    a.select {
+        margin-left: 20px;
+    }
+
+
+    @media screen and (max-width: 900px) {
+        ul.sidenav {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+
+        ul.sidenav li a {
+            float: left;
+            padding: 15px;
+        }
+
+        div.content {
+            margin-left: 0;
+        }
+    }
+
+    @media screen and (max-width: 400px) {
+        ul.sidenav li a {
+            text-align: center;
+            float: none;
+        }
+    }
+</style>
+
+</html>

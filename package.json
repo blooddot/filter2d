@@ -1,0 +1,29 @@
+{
+  "name": "notes-webgl-programming-guide",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "",
+  "scripts": {
+    "fix": "eslint --fix . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blooddot/notes-webgl-programming-guide.git"
+  },
+  "keywords": [
+    "webgl"
+  ],
+  "author": "blooddot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blooddot/notes-webgl-programming-guide/issues"
+  },
+  "homepage": "https://github.com/blooddot/notes-webgl-programming-guide#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "typescript": "^4.3.5"
+  }
+}
