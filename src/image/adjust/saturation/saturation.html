@@ -15,7 +15,7 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>brightness (亮度)</h1>
+                <h1>saturation (饱和度)</h1>
                 <figure id="input-uniforms" className="figure-uniforms"></figure>
             </div>
         </div>
@@ -24,7 +24,7 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage('brightness', { u_Brightness: [0.5, -1, 1] });
+            window.renderImage('saturation', { u_Saturation: [0.5, -1, 1] });
         }
     </script>
 </body>

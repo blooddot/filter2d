@@ -51,9 +51,9 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
 
         range.addEventListener('input', (e) => {
             const value = rangeToInput(range.value, min, max);
-            if (uniforms[name] === value) return;
+            if (uniforms[name][0] === value) return;
 
-            uniforms[name] = value;
+            uniforms[name][0] = value;
             input.value = value;
 
             render();
@@ -77,7 +77,7 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
     render();
 }
 
-async function init(name: string, uniforms?: Record<string, unknown>) {
+async function init(name: string, uniforms?: Record<string, [number, number, number]>) {
     const { gl, program } = await initWebGL(name);
 
     const vertexCount = initVertexBuffers(gl, program);
@@ -88,11 +88,11 @@ async function init(name: string, uniforms?: Record<string, unknown>) {
     initTexture(gl, program, vertexCount);
 }
 
-function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms?: Record<string, unknown>) {
+function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms?: Record<string, [number, number, number]>) {
     if (!uniforms) return;
 
     Object.keys(uniforms).forEach((key) => {
-        const value = uniforms[key];
+        const [value] = uniforms[key];
         const location = gl.getUniformLocation(program, key);
         if (Array.isArray(value)) {
             switch (value.length) {

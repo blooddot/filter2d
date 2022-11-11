@@ -51,9 +51,9 @@ window.renderImage = function (name, uniforms) {
         });
         range.addEventListener('input', (e) => {
             const value = rangeToInput(range.value, min, max);
-            if (uniforms[name] === value)
+            if (uniforms[name][0] === value)
                 return;
-            uniforms[name] = value;
+            uniforms[name][0] = value;
             input.value = value;
             render();
         });
@@ -84,7 +84,7 @@ function initUniforms(gl, program, uniforms) {
     if (!uniforms)
         return;
     Object.keys(uniforms).forEach((key) => {
-        const value = uniforms[key];
+        const [value] = uniforms[key];
         const location = gl.getUniformLocation(program, key);
         if (Array.isArray(value)) {
             switch (value.length) {
