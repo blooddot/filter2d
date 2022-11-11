@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { initWebGL } from "../utils/util.js";
 //@ts-ignore
-export function renderImage(name, uniforms) {
+window.renderImage = function (name, uniforms) {
     return __awaiter(this, void 0, void 0, function* () {
         const { gl, program } = yield initWebGL(name);
         const vertexCount = initVertexBuffers(gl, program);
@@ -17,7 +17,7 @@ export function renderImage(name, uniforms) {
         initUniforms(gl, program, uniforms);
         initTexture(gl, program, vertexCount);
     });
-}
+};
 function initUniforms(gl, program, uniforms) {
     if (!uniforms)
         return;

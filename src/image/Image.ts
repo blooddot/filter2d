@@ -1,7 +1,7 @@
 import { initWebGL } from "../utils/util.js";
 
 //@ts-ignore
-export async function renderImage(name: string, uniforms?: Record<string, unknown>) {
+window.renderImage = async function (name: string, uniforms?: Record<string, unknown>) {
     const { gl, program } = await initWebGL(name);
 
     const vertexCount = initVertexBuffers(gl, program);
