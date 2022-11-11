@@ -5,7 +5,7 @@
     <meta charset='UTF-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>brightness</title>
+    <title>filter</title>
 </head>
 
 <body>
@@ -15,7 +15,7 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>uniforms</h1>
+                <h1>brightness (明亮度)</h1>
                 <figure id="input-uniforms" className="figure-uniforms"></figure>
             </div>
         </div>
@@ -23,73 +23,9 @@
 
     <script type='module' src='../../image.js'></script>
     <script>
-        function createNumberInput(name, value, min = 0, max = 1) {
-            const container = document.createElement('div');
-            container.className = 'row-content';
-
-            const title = document.createElement('label');
-            title.className = 'label-uniforms';
-            title.innerText = `${name}:`;
-            container.appendChild(title);
-
-            const input = document.createElement('input');
-            input.className = "input-number";
-            container.appendChild(input);
-            input.type = 'text';
-            input.min = min;
-            input.max = max;
-            input.value = value;
-
-            const range = document.createElement('input');
-            range.className = "input-range";
-            container.appendChild(range);
-            range.type = 'range';
-            range.value = value / (max - min) * 100;
-            console.log("range:", range.value);
-
-            input.addEventListener('change', (e) => {
-                let value = e.target.value;
-                if (value < min || value > max) {
-                    value = value < min ? min : max;
-                }
-
-                if (uniforms[name] === value) return;
-
-                uniforms[name] = e.target.value = value;
-                range.value = value / (max - min) * 100;
-
-                render();
-            });
-
-            range.addEventListener('input', (e) => {
-                const value = e.target.value / 100 * (max - min);
-                if (uniforms[name] === value) return;
-
-                uniforms[name] = value;
-                input.value = value;
-
-                render();
-            });
-
-            return container;
+        window.onload = function () {
+            window.renderImage('brightness', { u_Brightness: [0.5, -1, 1] });
         }
-
-        function render() {
-            window.renderImage("brightness", uniforms);
-        }
-
-        const uniforms = { u_Brightness: 0.5 };
-        const container = document.getElementById('input-uniforms');
-        Object.keys(uniforms).forEach(key => {
-            const numberInput = createNumberInput(key, uniforms[key]);
-            container.appendChild(numberInput);
-        });
-
-        window.onload = async function () {
-            render();
-        }
-
-
     </script>
 </body>
 <style>

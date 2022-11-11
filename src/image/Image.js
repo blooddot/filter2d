@@ -10,6 +10,68 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { initWebGL } from "../utils/util.js";
 //@ts-ignore
 window.renderImage = function (name, uniforms) {
+    function inputToRange(input, min, max) {
+        return ((input - min) / (max - min) * 100).toFixed(2);
+    }
+    function rangeToInput(range, min, max) {
+        return (range / 100 * (max - min) + min).toFixed(2);
+    }
+    function createNumberInput(name, value, min, max) {
+        const container = document.createElement('div');
+        container.className = 'row-content';
+        const title = document.createElement('label');
+        title.className = 'label-uniforms';
+        title.innerText = `${name}:`;
+        container.appendChild(title);
+        const input = document.createElement('input');
+        input.className = "input-number";
+        container.appendChild(input);
+        input.type = 'text';
+        input.min = String(min);
+        input.max = String(max);
+        input.value = value;
+        const range = document.createElement('input');
+        range.className = "input-range";
+        container.appendChild(range);
+        range.type = 'range';
+        range.value = inputToRange(value, min, max);
+        input.addEventListener('input', (e) => {
+            input.value = input.value === '' ? '0' : input.value;
+            let value = +input.value;
+            if (value < min || value > max) {
+                value = value < min ? min : max;
+                input.value = String(value);
+            }
+            if (uniforms[name][0] === value)
+                return;
+            uniforms[name][0] = value;
+            input.value = String(value);
+            range.value = inputToRange(value, min, max);
+            render();
+        });
+        range.addEventListener('input', (e) => {
+            const value = rangeToInput(range.value, min, max);
+            if (uniforms[name] === value)
+                return;
+            uniforms[name] = value;
+            input.value = value;
+            render();
+        });
+        return container;
+    }
+    function render() {
+        init(name, uniforms);
+    }
+    if (uniforms) {
+        const container = document.getElementById('input-uniforms');
+        Object.keys(uniforms).forEach(key => {
+            const numberInput = createNumberInput(key, ...uniforms[key]);
+            container.appendChild(numberInput);
+        });
+    }
+    render();
+};
+function init(name, uniforms) {
     return __awaiter(this, void 0, void 0, function* () {
         const { gl, program } = yield initWebGL(name);
         const vertexCount = initVertexBuffers(gl, program);
@@ -17,7 +79,7 @@ window.renderImage = function (name, uniforms) {
         initUniforms(gl, program, uniforms);
         initTexture(gl, program, vertexCount);
     });
-};
+}
 function initUniforms(gl, program, uniforms) {
     if (!uniforms)
         return;

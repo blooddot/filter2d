@@ -14,13 +14,17 @@
             <canvas id='webgl'>
                 Please use the browser supporting 'canvas'
             </canvas>
+            <div>
+                <h1>contrast (对比度)</h1>
+                <figure id="input-uniforms" className="figure-uniforms"></figure>
+            </div>
         </div>
     </div>
 
-    <script type='module' src='../image.js'></script>
+    <script type='module' src='../../image.js'></script>
     <script>
-        window.onload = async function () {
-            window.renderImage('normal');
+        window.onload = function () {
+            window.renderImage('contrast', { u_Contrast: [0.5, -1, 1] });
         }
     </script>
 </body>
@@ -51,6 +55,26 @@
     div.col-content {
         display: flex;
         flex-direction: column;
+    }
+
+    figure {
+        margin-top: 5px;
+        margin-left: 20px;
+    }
+
+    .input-number {
+        margin-left: 5px;
+        width: 50px;
+    }
+
+    .input-range {
+        margin-left: 5px;
+        width: 100px;
+    }
+
+    h1 {
+        margin-top: 5px;
+        margin-bottom: 20px;
     }
 
     canvas {
