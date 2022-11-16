@@ -1,4 +1,7 @@
-import { initWebGL } from "../utils/util.js";
+import Shader from "../core/Shader.js";
+import Stage from "../core/Stage.js";
+import Texture from "../core/Texture.js";
+import { initWebGL, loadGLSL } from "../utils/util.js";
 
 //@ts-ignore
 window.renderImage = function (name: string, uniforms?: Record<string, [number, number, number] | number>) {
@@ -73,8 +76,17 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
         return container;
     }
 
-    function render() {
+    async function render() {
+        // const image = await loadImage('../../../../resources/hello-world.png');
+        // Texture.from(image);
         init(name, uniforms);
+
+        // Texture.from(image);
+        // init("../vignette/vignette", {
+        //     u_Size: 0.5,
+        //     u_Amount: 0.5
+        // });
+
     }
 
     if (uniforms) {
@@ -93,13 +105,42 @@ window.renderImage = function (name: string, uniforms?: Record<string, [number, 
 
 async function init(name: string, uniforms?: Record<string, [number, number, number] | number>) {
     const { gl, program } = await initWebGL(name);
+    const { vertex, fragment } = await loadGLSL(name);
+    const image = await loadImage('../../../../resources/hello-world.png');
+    Texture.from(image);
 
-    const vertexCount = initVertexBuffers(gl, program);
+    // const stage = new Stage();
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    // stage.draw(texture);
+    const shader = new Shader(vertex, fragment);
+    shader.uniforms(uniforms).draw();
 
-    initUniforms(gl, program, uniforms);
-    initTexture(gl, program, vertexCount);
+    // texture.bind();
+    // texture.draw(() => {
+    //     shader.uniforms(uniforms).draw();
+    // });
+
+    // stage.simpleShader(shader, uniforms, texture);
+    // stage.update();
+
+    // const texture = new Texture();
+
+    // const vertexCount = initVertexBuffers(gl, program);
+
+    // gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    // initUniforms(gl, program, uniforms);
+    // initTexture(gl, program, vertexCount);
+    // initTexture(gl, program, 4);
+}
+
+function loadImage(src: string) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject();
+        image.src = src;
+    });
 }
 
 function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms?: Record<string, [number, number, number] | number>) {
@@ -141,8 +182,8 @@ function initUniforms(gl: WebGLRenderingContext, program: WebGLProgram, uniforms
                 break;
         }
     });
-    const u_LightColor = gl.getUniformLocation(program, 'u_LightColor');
-    gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);  //设置光线颜色（白色）
+    // const u_LightColor = gl.getUniformLocation(program, 'u_LightColor');
+    // gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);  //设置光线颜色（白色）
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext, program: WebGLProgram) {
@@ -198,6 +239,7 @@ function loadTexture(gl: WebGLRenderingContext, program: WebGLProgram, n: number
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);   //配置纹理图像
+
 
     gl.uniform1i(u_Sampler, 0); //将0号纹理传递给着色器
 

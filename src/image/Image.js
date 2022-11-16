@@ -7,7 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { initWebGL } from "../utils/util.js";
+import Shader from "../core/Shader.js";
+import Texture from "../core/Texture.js";
+import { initWebGL, loadGLSL } from "../utils/util.js";
 //@ts-ignore
 window.renderImage = function (name, uniforms) {
     function inputToRange(input, min, max) {
@@ -70,7 +72,16 @@ window.renderImage = function (name, uniforms) {
         return container;
     }
     function render() {
-        init(name, uniforms);
+        return __awaiter(this, void 0, void 0, function* () {
+            // const image = await loadImage('../../../../resources/hello-world.png');
+            // Texture.from(image);
+            init(name, uniforms);
+            // Texture.from(image);
+            // init("../vignette/vignette", {
+            //     u_Size: 0.5,
+            //     u_Amount: 0.5
+            // });
+        });
     }
     if (uniforms) {
         const container = document.getElementById('input-uniforms');
@@ -87,10 +98,33 @@ window.renderImage = function (name, uniforms) {
 function init(name, uniforms) {
     return __awaiter(this, void 0, void 0, function* () {
         const { gl, program } = yield initWebGL(name);
-        const vertexCount = initVertexBuffers(gl, program);
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        initUniforms(gl, program, uniforms);
-        initTexture(gl, program, vertexCount);
+        const { vertex, fragment } = yield loadGLSL(name);
+        const image = yield loadImage('../../../../resources/hello-world.png');
+        Texture.from(image);
+        // const stage = new Stage();
+        // stage.draw(texture);
+        const shader = new Shader(vertex, fragment);
+        shader.uniforms(uniforms).draw();
+        // texture.bind();
+        // texture.draw(() => {
+        //     shader.uniforms(uniforms).draw();
+        // });
+        // stage.simpleShader(shader, uniforms, texture);
+        // stage.update();
+        // const texture = new Texture();
+        // const vertexCount = initVertexBuffers(gl, program);
+        // gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        // initUniforms(gl, program, uniforms);
+        // initTexture(gl, program, vertexCount);
+        // initTexture(gl, program, 4);
+    });
+}
+function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject();
+        image.src = src;
     });
 }
 function initUniforms(gl, program, uniforms) {
@@ -131,8 +165,8 @@ function initUniforms(gl, program, uniforms) {
                 break;
         }
     });
-    const u_LightColor = gl.getUniformLocation(program, 'u_LightColor');
-    gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0); //设置光线颜色（白色）
+    // const u_LightColor = gl.getUniformLocation(program, 'u_LightColor');
+    // gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);  //设置光线颜色（白色）
 }
 function initVertexBuffers(gl, program) {
     //顶点坐标，纹理坐标
