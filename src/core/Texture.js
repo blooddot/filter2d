@@ -45,14 +45,6 @@ export default class Texture {
             return texture;
         });
     }
-    static getOfflineCanvas(texture) {
-        const canvas = Texture._offlineCanvas = Texture._offlineCanvas || document.createElement("canvas");
-        canvas.width = texture.width;
-        canvas.height = texture.height;
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        return canvas;
-    }
     loadSource(source) {
         this.width = source.width;
         this.height = source.height;
@@ -91,16 +83,13 @@ export default class Texture {
             gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null);
         }
     }
-    draw(callback) {
-        // return new Promise<void>(resolve => {
+    draw(shader, uniforms) {
         const frameBuffer = Texture.frameBuffer = Texture.frameBuffer || gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.id, 0);
         gl.viewport(0, 0, this.width, this.height);
-        // resolve();
-        callback === null || callback === void 0 ? void 0 : callback();
+        shader === null || shader === void 0 ? void 0 : shader.uniforms(uniforms).draw();
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        // })
     }
     swap(texture) {
         [this.id, texture.id] = [texture.id, this.id];

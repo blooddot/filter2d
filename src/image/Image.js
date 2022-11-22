@@ -21,19 +21,17 @@ class App {
         this._data = data;
         this._stage = new Stage();
         this._shaderMap = new Map();
-        const uniformsList = Object.keys(data).map(name => data[name]).filter(uniforms => !!uniforms);
-        if (uniformsList.length > 0) {
-            const container = document.getElementById('input-uniforms');
-            uniformsList.forEach(uniforms => {
-                Object.keys(uniforms).forEach(key => {
-                    const value = uniforms[key];
-                    if (!Array.isArray(value))
-                        return;
-                    const numberInput = this.createNumberInput(key, uniforms, ...value);
-                    container.appendChild(numberInput);
-                });
+        const container = document.getElementById('input-uniforms');
+        data.map(value => value[1])
+            .filter(uniforms => !!uniforms)
+            .forEach(uniforms => {
+            Object.keys(uniforms).forEach(key => {
+                const uniformsValue = uniforms[key];
+                const [value, min, max] = Array.isArray(uniformsValue) ? uniformsValue : [uniformsValue, undefined, undefined];
+                const numberInput = this.createNumberInput(key, uniforms, value, min, max);
+                container.appendChild(numberInput);
             });
-        }
+        });
     }
     inputToRange(input, min, max) {
         return ((input - min) / (max - min) * 100).toFixed(2);
@@ -67,11 +65,19 @@ class App {
             range.type = 'range';
             range.value = this.inputToRange(value, min, max);
             range.addEventListener('input', (e) => {
-                const value = this.rangeToInput(range.value, min, max);
-                if (uniforms[name][0] === value)
-                    return;
-                uniforms[name][0] = +value;
-                input.value = value;
+                const value = +this.rangeToInput(range.value, min, max);
+                const uniformsValue = uniforms[name];
+                if (typeof uniformsValue === "number") {
+                    if (uniformsValue === +value)
+                        return;
+                    uniforms[name] = +value;
+                }
+                else {
+                    if (uniformsValue[0] === +value)
+                        return;
+                    uniforms[name][0] = +value;
+                }
+                input.value = String(value);
                 this.render();
             });
         }
@@ -82,10 +88,17 @@ class App {
                 return;
             value = min !== undefined && value < min ? min : value;
             value = max !== undefined && value > max ? max : value;
-            if (uniforms[name][0] === value)
-                return;
-            input.value = String(value);
-            uniforms[name][0] = +value;
+            const uniformsValue = uniforms[name];
+            if (typeof uniformsValue === "number") {
+                if (uniformsValue === value)
+                    return;
+                uniforms[name] = value;
+            }
+            else {
+                if (uniformsValue[0] === value)
+                    return;
+                uniforms[name][0] = value;
+            }
             input.value = String(value);
             if (range) {
                 range.value = this.inputToRange(value, min, max);
@@ -100,19 +113,18 @@ class App {
                 this._texture = yield Texture.from(texturePath);
             }
             this._stage.draw(this._texture);
-            yield Promise.all(Object.keys(this._data).map((name) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(this._data.map(([name, uniformsData]) => __awaiter(this, void 0, void 0, function* () {
                 let shader = this._shaderMap.get(name);
                 if (!shader) {
                     shader = yield Shader.from(name);
                     this._shaderMap.set(name, shader);
                 }
-                const uniformsData = this._data[name];
                 const uniforms = uniformsData && Object.keys(uniformsData).reduce((data, key) => {
                     const value = uniformsData[key];
                     data[key] = Array.isArray(value) ? value[0] : value;
                     return data;
                 }, {});
-                this._stage.simpleShader(shader, uniforms);
+                this._stage.shading(shader, uniforms);
             })));
             this._stage.update();
         });

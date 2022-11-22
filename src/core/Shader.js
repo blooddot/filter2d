@@ -136,7 +136,6 @@ export default class Shader {
         gl.vertexAttribPointer(this._positionAttribute, 2, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ARRAY_BUFFER, Shader.texCoordBuffer);
         gl.vertexAttribPointer(this._texCoordAttribute, 2, gl.FLOAT, false, 0, 0);
-        // gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     destroy() {

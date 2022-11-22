@@ -20,9 +20,7 @@ export default class Stage {
             this.initialize(width !== null && width !== void 0 ? width : texture.width, height !== null && height !== void 0 ? height : texture.height);
         }
         texture.use();
-        this._texture.draw(() => {
-            Shader.defaultShader.draw();
-        });
+        this._texture.draw(Shader.defaultShader);
         return this;
     }
     update() {
@@ -30,20 +28,16 @@ export default class Stage {
         this._flippedShader.draw();
         return this;
     }
-    simpleShader(shader, uniforms, textureIn = this._texture, textureOut = this._texture) {
+    shading(shader, uniforms, textureIn = this._texture, textureOut = this._texture) {
         textureIn.use();
-        this._spareTexture.draw(() => {
-            shader.uniforms(uniforms).draw();
-        });
+        this._spareTexture.draw(shader, uniforms);
         this._spareTexture.swap(textureOut);
         return this;
     }
     contents() {
         this._texture.use();
         const texture = new Texture(this._texture.width, this._texture.height, gl.RGBA, gl.UNSIGNED_BYTE);
-        texture.draw(() => {
-            Shader.defaultShader.draw();
-        });
+        texture.draw(Shader.defaultShader);
         return texture;
     }
 }

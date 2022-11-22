@@ -30,12 +30,12 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage({
-                'vignette': {
+            window.renderImage([
+                ['vignette', {
                     u_Size: [0.5, 0, 1],
                     u_Amount: [0.5, 0, 1]
-                }
-            });
+                }]
+            ]);
         }
     </script>
 </body>

@@ -25,13 +25,13 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage({
-                'denoise': {
+            window.renderImage([
+                ['denoise', {
                     u_Strength: [0.5, 0, 1],
                     u_Width: 400,
                     u_Height: 486
-                }
-            });
+                }]
+            ]);
         }
     </script>
 </body>

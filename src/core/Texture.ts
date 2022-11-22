@@ -1,4 +1,5 @@
 import { gl } from "./constant.js";
+import Shader from "./Shader.js";
 
 function loadImage(src: string) {
     return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -17,16 +18,16 @@ export default class Texture {
         return texture;
     }
 
-    private static _offlineCanvas: HTMLCanvasElement;
-    public static getOfflineCanvas(texture: Texture) {
-        const canvas = Texture._offlineCanvas = Texture._offlineCanvas || document.createElement("canvas");
-        canvas.width = texture.width;
-        canvas.height = texture.height;
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
+    // private static _offlineCanvas: HTMLCanvasElement;
+    // public static getOfflineCanvas(texture: Texture) {
+    //     const canvas = Texture._offlineCanvas = Texture._offlineCanvas || document.createElement("canvas");
+    //     canvas.width = texture.width;
+    //     canvas.height = texture.height;
+    //     const context = canvas.getContext("2d");
+    //     context.clearRect(0, 0, canvas.width, canvas.height);
 
-        return canvas;
-    }
+    //     return canvas;
+    // }
 
     public static frameBuffer: WebGLFramebuffer;
 
@@ -110,17 +111,14 @@ export default class Texture {
         }
     }
 
-    public draw(callback?: () => void) {
-        // return new Promise<void>(resolve => {
+    public draw(shader?: Shader, uniforms?: Record<string, unknown>) {
         const frameBuffer = Texture.frameBuffer = Texture.frameBuffer || gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.id, 0);
         gl.viewport(0, 0, this.width, this.height);
 
-        // resolve();
-        callback?.();
+        shader?.uniforms(uniforms).draw();
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        // })
     }
 
     public swap(texture: Texture) {

@@ -32,9 +32,7 @@ export default class Stage {
         }
 
         texture.use();
-        this._texture.draw(() => {
-            Shader.defaultShader.draw();
-        });
+        this._texture.draw(Shader.defaultShader);
         return this;
     }
 
@@ -44,11 +42,9 @@ export default class Stage {
         return this;
     }
 
-    public simpleShader(shader: Shader, uniforms?: Record<string, unknown>, textureIn: Texture = this._texture, textureOut: Texture = this._texture) {
+    public shading(shader: Shader, uniforms?: Record<string, unknown>, textureIn: Texture = this._texture, textureOut: Texture = this._texture) {
         textureIn.use();
-        this._spareTexture.draw(() => {
-            shader.uniforms(uniforms).draw();
-        });
+        this._spareTexture.draw(shader, uniforms);
         this._spareTexture.swap(textureOut);
         return this;
     }
@@ -56,9 +52,7 @@ export default class Stage {
     public contents() {
         this._texture.use();
         const texture = new Texture(this._texture.width, this._texture.height, gl.RGBA, gl.UNSIGNED_BYTE);
-        texture.draw(() => {
-            Shader.defaultShader.draw();
-        });
+        texture.draw(Shader.defaultShader);
         return texture;
     }
 }
