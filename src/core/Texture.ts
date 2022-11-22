@@ -1,9 +1,19 @@
 import { gl } from "./constant.js";
 
+function loadImage(src: string) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject();
+        image.src = src;
+    });
+}
+
 export default class Texture {
-    public static from(source: TexImageSource) {
+    public static async from(source: string | TexImageSource): Promise<Texture> {
+        const image = typeof source === "string" ? await loadImage(source) : source;
         const texture = new Texture(0, 0, gl.RGBA, gl.UNSIGNED_BYTE);
-        texture.loadSource(source);
+        texture.loadSource(image);
         return texture;
     }
 
@@ -37,8 +47,8 @@ export default class Texture {
         this.format = format;
         this.type = type;
 
-        gl.bindTexture(gl.TEXTURE_2D, this.id);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  //对纹理图像进行y轴反转
+        gl.bindTexture(gl.TEXTURE_2D, this.id);
 
         // 这告诉WebGL如果纹理需要被缩小时，采用线性插值的方式来进行采样
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -101,16 +111,16 @@ export default class Texture {
     }
 
     public draw(callback?: () => void) {
-        return new Promise<void>(resolve => {
-            const frameBuffer = Texture.frameBuffer = Texture.frameBuffer || gl.createFramebuffer();
-            gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.id, 0);
-            gl.viewport(0, 0, this.width, this.height);
+        // return new Promise<void>(resolve => {
+        const frameBuffer = Texture.frameBuffer = Texture.frameBuffer || gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.id, 0);
+        gl.viewport(0, 0, this.width, this.height);
 
-            resolve();
-            callback?.();
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        })
+        // resolve();
+        callback?.();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        // })
     }
 
     public swap(texture: Texture) {
@@ -120,12 +130,12 @@ export default class Texture {
         [this.format, texture.format] = [texture.format, this.format];
     }
 
-    public bind(unit: number = 0) {
+    public use(unit: number = 0) {
         gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, this.id);
     }
 
-    public unbind(unit: number = 0) {
+    public unuse(unit: number = 0) {
         gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, null);
     }

@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { gl } from "./constant.js";
 import Shader from "./Shader.js";
 import Texture from "./Texture.js";
@@ -25,36 +16,30 @@ export default class Stage {
         this._isInitialized = true;
     }
     draw(texture, width, height) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this._isInitialized || texture.width !== this._width || texture.height !== this._height) {
-                this.initialize(width !== null && width !== void 0 ? width : texture.width, height !== null && height !== void 0 ? height : texture.height);
-            }
-            texture.bind();
-            yield this._texture.draw();
+        if (!this._isInitialized || texture.width !== this._width || texture.height !== this._height) {
+            this.initialize(width !== null && width !== void 0 ? width : texture.width, height !== null && height !== void 0 ? height : texture.height);
+        }
+        texture.use();
+        this._texture.draw(() => {
             Shader.defaultShader.draw();
         });
+        return this;
     }
     update() {
-        this._texture.bind();
+        this._texture.use();
         this._flippedShader.draw();
         return this;
     }
-    simpleShader(shader, uniforms, textureIn, textureOut) {
-        const texture = textureIn || this._texture;
-        // if (!this._isInitialized || texture.width !== this._width || texture.height !== this._height) {
-        //     this.initialize(texture.width, texture.height);
-        // }
-        texture.bind();
-        texture.draw(() => {
+    simpleShader(shader, uniforms, textureIn = this._texture, textureOut = this._texture) {
+        textureIn.use();
+        this._spareTexture.draw(() => {
             shader.uniforms(uniforms).draw();
         });
-        // this._spareTexture.draw(() => {
-        //     shader.uniforms(uniforms).draw();
-        // });
-        // this._spareTexture.swap(textureOut || this._texture);
+        this._spareTexture.swap(textureOut);
+        return this;
     }
     contents() {
-        this._texture.bind();
+        this._texture.use();
         const texture = new Texture(this._texture.width, this._texture.height, gl.RGBA, gl.UNSIGNED_BYTE);
         texture.draw(() => {
             Shader.defaultShader.draw();

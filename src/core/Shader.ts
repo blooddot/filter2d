@@ -1,3 +1,4 @@
+import { loadGLSL } from "../utils/util.js";
 import { gl } from "./constant.js";
 
 const defaultVertexSource = `
@@ -12,20 +13,45 @@ const defaultVertexSource = `
 
 const defaultFragmentSource = `
     precision mediump float;
-    uniform sampler2D u_Texture;
+    uniform sampler2D u_Sampler;
     varying vec2 v_TexCoord;
     void main() {
-        gl_FragColor = texture2D(u_Texture, v_TexCoord);
+        gl_FragColor = texture2D(u_Sampler, v_TexCoord);
     }
 `
 
 export default class Shader {
-    private static vertexBuffer: WebGLBuffer;
-    private static texCoordBuffer: WebGLBuffer;
+    private static _vertexBuffer: WebGLBuffer;
+    public static get vertexBuffer() {
+        if (!Shader._vertexBuffer) {
+            const vertexBuffer = Shader._vertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0]), gl.STATIC_DRAW);
+        }
+
+        return Shader._vertexBuffer;
+    }
+
+    private static _texCoordBuffer: WebGLBuffer;
+    public static get texCoordBuffer() {
+        if (!Shader._texCoordBuffer) {
+            const texCoordBuffer = Shader._texCoordBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0]), gl.STATIC_DRAW);
+        }
+
+        return Shader._texCoordBuffer;
+    }
+
     private static _defaultShader: Shader;
     public static get defaultShader(): Shader {
         Shader._defaultShader = Shader._defaultShader || new Shader();
         return Shader._defaultShader;
+    }
+
+    public static async from(name: string) {
+        const { vertex, fragment } = await loadGLSL(name);
+        return new Shader(vertex, fragment);
     }
 
     private _positionAttribute: number;
@@ -42,6 +68,12 @@ export default class Shader {
         if (!gl.getProgramParameter(this._program, gl.LINK_STATUS)) {
             throw new Error(`Could not link shader program ${gl.getProgramInfoLog(this._program)}`);
         }
+
+        this._positionAttribute = gl.getAttribLocation(this._program, 'a_Position');
+        gl.enableVertexAttribArray(this._positionAttribute);
+
+        this._texCoordAttribute = gl.getAttribLocation(this._program, 'a_TexCoord');
+        gl.enableVertexAttribArray(this._texCoordAttribute);
     }
 
     private compile(type: number, source: string): WebGLShader {
@@ -115,39 +147,14 @@ export default class Shader {
     }
 
     public draw() {
-        // const viewport = gl.getParameter(gl.VIEWPORT);
-        const top = 0.8;
-        const left = -0.8;
-        const right = 0.8;
-        const bottom = -0.8;
-        const vertexBuffer = Shader.vertexBuffer = Shader.vertexBuffer || gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([left, top, left, bottom, right, top, right, bottom]), gl.STATIC_DRAW);
-
-        if (!Shader.texCoordBuffer) {
-            const texCoordBuffer = Shader.texCoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1.0, 0, 0.0, 1.0, 1.0, 1.0, 0.0]), gl.STATIC_DRAW);
-        }
-
-        if (!this._positionAttribute) {
-            this._positionAttribute = gl.getAttribLocation(this._program, 'a_Position');
-            gl.enableVertexAttribArray(this._positionAttribute);
-        }
-
-        if (!this._texCoordAttribute) {
-            this._texCoordAttribute = gl.getAttribLocation(this._program, 'a_TexCoord');
-            gl.enableVertexAttribArray(this._texCoordAttribute);
-        }
-
         gl.useProgram(this._program);
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, Shader.vertexBuffer);
         gl.vertexAttribPointer(this._positionAttribute, 2, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, Shader.texCoordBuffer);
         gl.vertexAttribPointer(this._texCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        // gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 

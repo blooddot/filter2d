@@ -29,7 +29,9 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage('vibrance', { u_Amount: 0.5 });
+            window.renderImage({
+                'vibrance': { u_Amount: [0.5, -1, 1] }
+            });
         }
     </script>
 </body>

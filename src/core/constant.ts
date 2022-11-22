@@ -1,5 +1,7 @@
-import { getWebGLContext } from "../../libs/cuon/cuon-utils.js";
+export const gl = (() => {
+    const canvas = document.getElementById('webgl') as HTMLCanvasElement;
+    canvas.setAttribute('width', '400');
+    canvas.setAttribute('height', '486');
 
-const canvas = document.getElementById("webgl") as HTMLCanvasElement;
-
-export const gl = getWebGLContext(canvas);
+    return canvas.getContext('experimental-webgl', { premultipliedAlpha: false }) as WebGLRenderingContext;
+})()

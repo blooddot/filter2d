@@ -1,4 +1,21 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { gl } from "./constant.js";
+function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject();
+        image.src = src;
+    });
+}
 export default class Texture {
     constructor(width, height, format, type) {
         this.id = gl.createTexture();
@@ -6,8 +23,8 @@ export default class Texture {
         this.height = height;
         this.format = format;
         this.type = type;
-        gl.bindTexture(gl.TEXTURE_2D, this.id);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); //对纹理图像进行y轴反转
+        gl.bindTexture(gl.TEXTURE_2D, this.id);
         // 这告诉WebGL如果纹理需要被缩小时，采用线性插值的方式来进行采样
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         // 这告诉WebGL如果纹理需要被方法时，采用线性插值的方式来进行采样
@@ -21,9 +38,12 @@ export default class Texture {
         }
     }
     static from(source) {
-        const texture = new Texture(0, 0, gl.RGBA, gl.UNSIGNED_BYTE);
-        texture.loadSource(source);
-        return texture;
+        return __awaiter(this, void 0, void 0, function* () {
+            const image = typeof source === "string" ? yield loadImage(source) : source;
+            const texture = new Texture(0, 0, gl.RGBA, gl.UNSIGNED_BYTE);
+            texture.loadSource(image);
+            return texture;
+        });
     }
     static getOfflineCanvas(texture) {
         const canvas = Texture._offlineCanvas = Texture._offlineCanvas || document.createElement("canvas");
@@ -72,15 +92,15 @@ export default class Texture {
         }
     }
     draw(callback) {
-        return new Promise(resolve => {
-            const frameBuffer = Texture.frameBuffer = Texture.frameBuffer || gl.createFramebuffer();
-            gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.id, 0);
-            gl.viewport(0, 0, this.width, this.height);
-            resolve();
-            callback === null || callback === void 0 ? void 0 : callback();
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        });
+        // return new Promise<void>(resolve => {
+        const frameBuffer = Texture.frameBuffer = Texture.frameBuffer || gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.id, 0);
+        gl.viewport(0, 0, this.width, this.height);
+        // resolve();
+        callback === null || callback === void 0 ? void 0 : callback();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        // })
     }
     swap(texture) {
         [this.id, texture.id] = [texture.id, this.id];
@@ -88,11 +108,11 @@ export default class Texture {
         [this.height, texture.height] = [texture.height, this.height];
         [this.format, texture.format] = [texture.format, this.format];
     }
-    bind(unit = 0) {
+    use(unit = 0) {
         gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, this.id);
     }
-    unbind(unit = 0) {
+    unuse(unit = 0) {
         gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
