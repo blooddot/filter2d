@@ -16,9 +16,11 @@
         "redflower",
         "Renderbuffers",
         "rlen",
+        "triangleblur",
         "tiltshift",
         "tscode",
         "unsharpmask",
+        "unuse",
         "vshader",
         "xform",
         "Zfighting"

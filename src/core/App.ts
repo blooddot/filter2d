@@ -1,15 +1,11 @@
 import Shader from "../core/Shader.js";
 import Stage from "../core/Stage.js";
 import Texture from "../core/Texture.js";
-import { renderLensblur } from "../image/blur/lensblur/lensblur.js";
-import { renderTiltshift } from "../image/blur/tiltshift/tiltshift.js";
 import { renderDefault } from "../image/image.js";
+import { renderCfgMap } from "./Config.js";
 
 export default class App {
     private _texture: Texture;
-    public get texture() {
-        return this._texture;
-    }
     private _stage: Stage;
     public get stage(): Stage {
         return this._stage;
@@ -20,19 +16,25 @@ export default class App {
     public getShader(name: string) {
         return this._shaderMap.get(name);
     }
+    public async getAddShader(name: string, vertexPath?: string, fragmentPath?: string) {
+        let shader = this.getShader(name);
+        if (!shader) {
+            vertexPath = vertexPath || `${name}.vs`;
+            fragmentPath = fragmentPath || `${name}.fs`;
+            shader = await Shader.from(vertexPath, fragmentPath);
+            this.setShader(name, shader);
+        }
+
+        return shader;
+    }
     public setShader(name: string, shader: Shader) {
         this._shaderMap.set(name, shader);
     }
-    private _renderMap: Map<string, (app: App, name: string, uniformsData?: TUniformsData) => void>;
     public constructor(texturePath: string, data: [string, TUniformsData][]) {
         this._texturePath = texturePath;
         this._data = data;
         this._stage = new Stage();
         this._shaderMap = new Map();
-        this._renderMap = new Map([
-            ["lensblur", renderLensblur],
-            ["tiltshift", renderTiltshift],
-        ]);
 
         const container = document.getElementById('input-uniforms');
         data.map(value => value[1])
@@ -122,7 +124,7 @@ export default class App {
         this._stage.draw(this._texture);
 
         await Promise.all(data.map(([name, uniformsData]) => {
-            const renderFn = this._renderMap.get(name) || renderDefault;
+            const renderFn = renderCfgMap.get(name) || renderDefault;
             return renderFn(this, name, uniformsData);
         }));
 

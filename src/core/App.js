@@ -7,21 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import Shader from "../core/Shader.js";
 import Stage from "../core/Stage.js";
 import Texture from "../core/Texture.js";
-import { renderLensblur } from "../image/blur/lensblur/lensblur.js";
-import { renderTiltshift } from "../image/blur/tiltshift/tiltshift.js";
 import { renderDefault } from "../image/image.js";
+import { renderCfgMap } from "./Config.js";
 export default class App {
     constructor(texturePath, data) {
         this._texturePath = texturePath;
         this._data = data;
         this._stage = new Stage();
         this._shaderMap = new Map();
-        this._renderMap = new Map([
-            ["lensblur", renderLensblur],
-            ["tiltshift", renderTiltshift],
-        ]);
         const container = document.getElementById('input-uniforms');
         data.map(value => value[1])
             .filter(uniforms => !!uniforms)
@@ -34,14 +30,23 @@ export default class App {
             });
         });
     }
-    get texture() {
-        return this._texture;
-    }
     get stage() {
         return this._stage;
     }
     getShader(name) {
         return this._shaderMap.get(name);
+    }
+    getAddShader(name, vertexPath, fragmentPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let shader = this.getShader(name);
+            if (!shader) {
+                vertexPath = vertexPath || `${name}.vs`;
+                fragmentPath = fragmentPath || `${name}.fs`;
+                shader = yield Shader.from(vertexPath, fragmentPath);
+                this.setShader(name, shader);
+            }
+            return shader;
+        });
     }
     setShader(name, shader) {
         this._shaderMap.set(name, shader);
@@ -111,7 +116,7 @@ export default class App {
             }
             this._stage.draw(this._texture);
             yield Promise.all(data.map(([name, uniformsData]) => {
-                const renderFn = this._renderMap.get(name) || renderDefault;
+                const renderFn = renderCfgMap.get(name) || renderDefault;
                 return renderFn(this, name, uniformsData);
             }));
             this._stage.update();

@@ -1,5 +1,4 @@
 import App from "../core/App.js";
-import Shader from "../core/Shader.js";
 import Texture from "../core/Texture.js";
 
 const texturePath = '../../../../resources/hello-world.png';
@@ -11,13 +10,7 @@ window.renderImage = function (data: [string, TUniformsData][]) {
 }
 
 export async function renderDefault(app: App, name: string, uniformsData?: TUniformsData, vertexPath?: string, fragmentPath?: string, textureIn?: Texture, textureOut?: Texture) {
-    vertexPath = vertexPath || `${name}.vs`;
-    fragmentPath = fragmentPath || `${name}.fs`;
-    let shader = app.getShader(name);
-    if (!shader) {
-        shader = await Shader.from(vertexPath, fragmentPath);
-        app.setShader(name, shader);
-    }
+    const shader = await app.getAddShader(name, vertexPath, fragmentPath);
 
     const uniforms = uniformsData && Object.keys(uniformsData).reduce((data, key) => {
         data[key] = uniformsData[key][0];

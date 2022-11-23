@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel="stylesheet" type="text/css" href="../../image.css">
+    <title>filter</title>
+</head>
+
+<body>
+    <div class="content">
+        <div class="row-content">
+            <canvas id='webgl'>
+                Please use the browser supporting 'canvas'
+            </canvas>
+            <div>
+                <h1>unsharpmask</h1>
+                <h5>A form of image sharpening that amplifies high-frequencies in the image. It is implemented by
+                    scaling pixels away from the average of their neighbors.</h5>
+                <br>
+                <h6>radius <i>The blur radius that calculates the average of the neighboring pixels.</i></h6>
+                <h6>strength <i>A scale factor where 0 is no effect and higher values cause a stronger effect.</i></h6>
+                <br>
+                <figure id="input-uniforms" className="figure-uniforms"></figure>
+            </div>
+        </div>
+    </div>
+
+    <script type='module' src='../../image.js'></script>
+    <script>
+        window.onload = function () {
+            window.renderImage([
+                ['unsharpmask', {
+                    radius: [20, 0, 200, 1],
+                    u_Strength: [2, 0, 5, 0.01],
+                }]
+            ]);
+        }
+    </script>
+</body>
+
+</html>

@@ -7,20 +7,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import App from "../core/App.js";
-const texturePath = '../../../../resources/hello-world.png';
-//@ts-ignore
-window.renderImage = function (data) {
-    const app = new App(texturePath, data);
-    app.render();
-};
-export function renderDefault(app, name, uniformsData, vertexPath, fragmentPath, textureIn, textureOut) {
+import { renderDefault } from "../../image.js";
+const defaultVertexPath = "../../default/default.vs";
+export function renderTriangleblur(app, name, uniformsData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const shader = yield app.getAddShader(name, vertexPath, fragmentPath);
-        const uniforms = uniformsData && Object.keys(uniformsData).reduce((data, key) => {
-            data[key] = uniformsData[key][0];
-            return data;
-        }, {});
-        app.stage.shading(shader, uniforms, textureIn, textureOut);
+        const { radius: [radius] } = uniformsData;
+        yield renderDefault(app, name, {
+            u_Delta: [[radius / app.stage.width, 0]]
+        }, defaultVertexPath);
+        yield renderDefault(app, name, {
+            u_Delta: [[0, radius / app.stage.height]]
+        }, defaultVertexPath);
     });
 }

@@ -96,6 +96,7 @@ export default class Shader {
             const value = uniforms[key];
             const location = gl.getUniformLocation(this._program, key);
             if (!location) return;
+
             if (Array.isArray(value)) {
                 switch (value.length) {
                     case 1:

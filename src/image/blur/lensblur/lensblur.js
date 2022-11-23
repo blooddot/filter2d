@@ -14,7 +14,7 @@ export function renderLensblur(app, name, uniformsData) {
         u_Power: [power]
     }, defaultVertexPath, "lensBlurPrePass.fs");
     // Blur two rhombi in parallel into extraTexture
-    app.stage.extraTexture.ensureFormat(app.texture);
+    app.stage.extraTexture.ensureFormat(app.stage.texture);
     renderDefault(app, "lensBlur0", {
         u_Delta0: [dir[0]]
     }, defaultVertexPath, "lensBlur0.fs", app.stage.texture, app.stage.extraTexture);
