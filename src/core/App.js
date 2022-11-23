@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import Stage from "../core/Stage.js";
 import Texture from "../core/Texture.js";
 import { renderLensblur } from "../image/blur/lensblur/lensblur.js";
+import { renderTiltshift } from "../image/blur/tiltshift/tiltshift.js";
 import { renderDefault } from "../image/image.js";
 export default class App {
     constructor(texturePath, data) {
@@ -18,7 +19,8 @@ export default class App {
         this._stage = new Stage();
         this._shaderMap = new Map();
         this._renderMap = new Map([
-            ["lensblur", renderLensblur]
+            ["lensblur", renderLensblur],
+            ["tiltshift", renderTiltshift],
         ]);
         const container = document.getElementById('input-uniforms');
         data.map(value => value[1])

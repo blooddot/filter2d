@@ -2,6 +2,7 @@ import Shader from "../core/Shader.js";
 import Stage from "../core/Stage.js";
 import Texture from "../core/Texture.js";
 import { renderLensblur } from "../image/blur/lensblur/lensblur.js";
+import { renderTiltshift } from "../image/blur/tiltshift/tiltshift.js";
 import { renderDefault } from "../image/image.js";
 
 export default class App {
@@ -29,7 +30,8 @@ export default class App {
         this._stage = new Stage();
         this._shaderMap = new Map();
         this._renderMap = new Map([
-            ["lensblur", renderLensblur]
+            ["lensblur", renderLensblur],
+            ["tiltshift", renderTiltshift],
         ]);
 
         const container = document.getElementById('input-uniforms');
