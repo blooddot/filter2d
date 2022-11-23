@@ -7,11 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { getWebGLContext, initShaders } from '../../libs/cuon/cuon-utils.js';
 export function loadFile(url) {
     return __awaiter(this, void 0, void 0, function* () {
-        const content = yield fetch(url).then(response => response.text());
-        return content;
+        const content = yield fetch(url)
+            .then(response => response.text())
+            .catch(error => {
+            console.error(error);
+        });
+        return content || '';
     });
 }
 export function loadJson(url) {
@@ -20,32 +23,16 @@ export function loadJson(url) {
         return obj;
     });
 }
-export function loadGLSL(name) {
+export function loadGLSL(vertexPath, fragmentPath) {
     return __awaiter(this, void 0, void 0, function* () {
         const promises = [
-            loadFile(`${name}.vs`),
-            loadFile(`${name}.fs`),
+            loadFile(vertexPath),
+            loadFile(fragmentPath),
         ];
         const [vertex, fragment] = yield Promise.all(promises);
         return { vertex, fragment };
     });
 }
-export function initWebGL(name, offsetWidth = 0, offsetHeight = 0) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { vertex, fragment } = yield loadGLSL(name);
-        const canvas = document.getElementById("webgl");
-        canvas.setAttribute("width", (document.body.clientWidth + offsetWidth).toString());
-        canvas.setAttribute("height", (document.body.clientHeight + offsetHeight).toString());
-        const gl = getWebGLContext(canvas);
-        if (!gl) {
-            console.error('Failed to get the rendering context for WebGL');
-            return null;
-        }
-        const program = initShaders(gl, vertex, fragment);
-        if (!program) {
-            console.error('Failed to initialize shaders.');
-            return null;
-        }
-        return { gl, program, canvas };
-    });
+export function clamp(low, value, height) {
+    return Math.max(low, Math.min(value, height));
 }

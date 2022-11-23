@@ -25,9 +25,11 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage('noise', {
-                u_Amount: [0.5, 0, 1]
-            });
+            window.renderImage([
+                ['noise', {
+                    u_Amount: [0.5, 0, 1, 0.01]
+                }]
+            ]);
         }
     </script>
 </body>

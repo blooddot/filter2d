@@ -16,7 +16,12 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>denoise (降噪)</h1>
+                <h1>triangleblur</h1>
+                <br>
+                <h6>radius <i>the radius of the hexagonal disk convolved with the image</i></h6>
+                <h6>brightness <i>-1 to 1 (the brightness of the bokeh, negative values will create dark bokeh)</i></h6>
+                <h6>angle <i>the rotation of the bokeh in radians</i></h6>
+                <br>
                 <figure id="input-uniforms" className="figure-uniforms"></figure>
             </div>
         </div>
@@ -26,10 +31,8 @@
     <script>
         window.onload = function () {
             window.renderImage([
-                ['denoise', {
-                    u_Strength: [0.5, 0, 1, 0.01],
-                    u_Width: [400],
-                    u_Height: [486]
+                ['triangleblur', {
+                    radius: [50, 0, 200, 1]
                 }]
             ]);
         }

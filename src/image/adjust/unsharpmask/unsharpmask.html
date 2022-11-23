@@ -16,7 +16,13 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>denoise (降噪)</h1>
+                <h1>unsharpmask</h1>
+                <h5>A form of image sharpening that amplifies high-frequencies in the image. It is implemented by
+                    scaling pixels away from the average of their neighbors.</h5>
+                <br>
+                <h6>radius <i>The blur radius that calculates the average of the neighboring pixels.</i></h6>
+                <h6>strength <i>A scale factor where 0 is no effect and higher values cause a stronger effect.</i></h6>
+                <br>
                 <figure id="input-uniforms" className="figure-uniforms"></figure>
             </div>
         </div>
@@ -26,10 +32,9 @@
     <script>
         window.onload = function () {
             window.renderImage([
-                ['denoise', {
-                    u_Strength: [0.5, 0, 1, 0.01],
-                    u_Width: [400],
-                    u_Height: [486]
+                ['unsharpmask', {
+                    radius: [20, 0, 200, 1],
+                    u_Strength: [2, 0, 5, 0.01],
                 }]
             ]);
         }

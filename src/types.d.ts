@@ -1,0 +1,1 @@
+type TUniformsData = Record<string, [unknown, number?, number?]>;
