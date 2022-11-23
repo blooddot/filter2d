@@ -4,7 +4,7 @@ import Texture from "../core/Texture.js";
 const texturePath = '../../../../resources/hello-world.png';
 
 //@ts-ignore
-window.renderImage = function (data: [string, TUniformsData][]) {
+window.renderImage = function (name: string, data: TUniformsData) {
     const app = new App(texturePath, data);
     app.render();
 };
