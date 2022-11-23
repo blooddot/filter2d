@@ -11,25 +11,25 @@ export default class App {
         return this._stage;
     }
     private _texturePath: string;
-    private _data: [string, TUniformsData][];
-    public setData(data: [string, TUniformsData][]) {
-        this._data = data;
+    private _name: string;
+    private _uniformsData: TUniformsData;
+    public setData(name: string, uniformsData: TUniformsData) {
+        this._name = name;
+        this._uniformsData = uniformsData;
+
         const container = document.getElementById('input-uniforms');
         container?.childNodes?.forEach((node) => {
             container.removeChild(node);
         });
 
-        data.map(value => value[1])
-            .filter(uniforms => !!uniforms)
-            .forEach(uniforms => {
-                Object.keys(uniforms).forEach(key => {
-                    const uniformsValue = uniforms[key];
-                    const [value, min, max, step] = Array.isArray(uniformsValue) ? uniformsValue : [uniformsValue, undefined, undefined, undefined];
-                    const numberInput = this.createNumberInput(key, uniforms, value, min, max, step);
-                    container.appendChild(numberInput);
-                });
-            });
+        uniformsData && Object.keys(uniformsData).forEach(key => {
+            const uniformsValue = uniformsData[key];
+            const [value, min, max, step] = Array.isArray(uniformsValue) ? uniformsValue : [uniformsValue, undefined, undefined, undefined];
+            const numberInput = this.createNumberInput(key, uniformsData, value, min, max, step);
+            container.appendChild(numberInput);
+        });
     }
+
     private _shaderMap: Map<string, Shader>;
     public getShader(name: string) {
         return this._shaderMap.get(name);
@@ -48,14 +48,14 @@ export default class App {
     public setShader(name: string, shader: Shader) {
         this._shaderMap.set(name, shader);
     }
-    public constructor(texturePath: string, data?: [string, TUniformsData][]) {
+    public constructor(texturePath: string, name: string, uniformsData?: TUniformsData) {
         this._texturePath = texturePath;
         this._stage = new Stage();
         this._shaderMap = new Map();
-        this.setData(data);
+        this.setData(name, uniformsData);
     }
 
-    private createNumberInput(name: string, uniforms: TUniformsData, value: unknown, min?: number, max?: number, step?: number) {
+    private createNumberInput(name: string, uniformsData: TUniformsData, value: unknown, min?: number, max?: number, step?: number) {
         const container = document.createElement('div');
         container.className = 'row-content';
 
@@ -93,9 +93,9 @@ export default class App {
 
             range.addEventListener('input', (e) => {
                 const value = +range.value;
-                if (uniforms[name][0] === value) return;
+                if (uniformsData[name][0] === value) return;
 
-                uniforms[name][0] = value;
+                uniformsData[name][0] = value;
                 input.value = String(value);
                 this.render();
             });
@@ -108,9 +108,9 @@ export default class App {
 
             value = min !== undefined && value < min ? min : value;
             value = max !== undefined && value > max ? max : value;
-            if (uniforms[name][0] === value) return;
+            if (uniformsData[name][0] === value) return;
 
-            uniforms[name][0] = value;
+            uniformsData[name][0] = value;
             input.value = String(value);
             if (range) {
                 range.value = String(value);
@@ -121,7 +121,7 @@ export default class App {
         return container;
     }
 
-    public async render(data: [string, TUniformsData][] = this._data, texturePath: string = this._texturePath) {
+    public async render(name: string = this._name, uniformsData: TUniformsData = this._uniformsData, texturePath: string = this._texturePath) {
         if (!this._texture || this._texturePath !== texturePath) {
             this._texturePath = texturePath;
             this._texture = await Texture.from(texturePath);
@@ -129,10 +129,8 @@ export default class App {
 
         this._stage.draw(this._texture);
 
-        await Promise.all(data.map(([name, uniformsData]) => {
-            const renderFn = renderCfgMap.get(name) || renderDefault;
-            return renderFn(this, name, uniformsData);
-        }));
+        const renderFn = renderCfgMap.get(name) || renderDefault;
+        await renderFn(this, name, uniformsData);
 
         this._stage.update();
     }

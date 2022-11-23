@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import App from "../core/App.js";
 const texturePath = '../../../../resources/hello-world.png';
 //@ts-ignore
-window.renderImage = function (name, data) {
-    const app = new App(texturePath, data);
+window.renderImage = function (name, uniformsData) {
+    const app = new App(texturePath, name, uniformsData);
     app.render();
 };
 export function renderDefault(app, name, uniformsData, vertexPath, fragmentPath, textureIn, textureOut) {

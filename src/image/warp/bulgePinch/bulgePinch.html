@@ -32,15 +32,14 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage([
-                ['bulgePinch', {
-                    u_CenterX: [0.5 * window.imageWidth],
-                    u_CenterY: [0.5 * window.imageHeight],
-                    u_Radius: [200, 0, 600, 1],
-                    u_Strength: [0.5, -1, 1, 0.01],
-                    u_Width: [window.imageWidth],
-                    u_Height: [window.imageHeight]
-                }]]);
+            window.renderImage('bulgePinch', {
+                u_CenterX: [0.5 * window.imageWidth],
+                u_CenterY: [0.5 * window.imageHeight],
+                u_Radius: [200, 0, 600, 1],
+                u_Strength: [0.5, -1, 1, 0.01],
+                u_Width: [window.imageWidth],
+                u_Height: [window.imageHeight]
+            });
         }
     </script>
 </body>

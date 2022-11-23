@@ -30,16 +30,14 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage([
-                ['tiltShift', {
-                    startX: [0.15],
-                    startY: [0.75],
-                    endX: [0.75],
-                    endY: [0.6],
-                    blurRadius: [15, 0, 50, 1],
-                    gradientRadius: [200, 0, 400, 1]
-                }]
-            ]);
+            window.renderImage('tiltShift', {
+                startX: [0.15],
+                startY: [0.75],
+                endX: [0.75],
+                endY: [0.6],
+                blurRadius: [15, 0, 50, 1],
+                gradientRadius: [200, 0, 400, 1]
+            });
         }
     </script>
 </body>

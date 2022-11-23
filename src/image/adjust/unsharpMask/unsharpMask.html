@@ -31,12 +31,10 @@
     <script type='module' src='../../image.js'></script>
     <script>
         window.onload = function () {
-            window.renderImage([
-                ['unsharpMask', {
-                    radius: [20, 0, 200, 1],
-                    u_Strength: [2, 0, 5, 0.01],
-                }]
-            ]);
+            window.renderImage('unsharpMask', {
+                radius: [20, 0, 200, 1],
+                u_Strength: [2, 0, 5, 0.01],
+            });
         }
     </script>
 </body>

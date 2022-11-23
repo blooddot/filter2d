@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Shader from "../../../core/Shader.js";
-import { renderTriangleblur } from "../../blur/triangleblur/triangleBlur.js";
+import { renderTriangleblur } from "../../blur/triangleBlur/triangleBlur.js";
 import { renderDefault } from "../../image.js";
 const defaultVertexPath = "../../default/default.vs";
 export function renderUnsharpmask(app, name, uniformsData) {

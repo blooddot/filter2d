@@ -1,6 +1,6 @@
 import App from "../../../core/App.js";
 import Shader from "../../../core/Shader.js";
-import { renderTriangleblur } from "../../blur/triangleblur/triangleBlur.js";
+import { renderTriangleblur } from "../../blur/triangleBlur/triangleBlur.js";
 import { renderDefault } from "../../image.js";
 
 const defaultVertexPath = "../../default/default.vs";
