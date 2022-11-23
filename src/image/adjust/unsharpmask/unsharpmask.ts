@@ -1,6 +1,6 @@
 import App from "../../../core/App.js";
 import Shader from "../../../core/Shader.js";
-import { renderTriangleblur } from "../../blur/triangleblur/triangleblur.js";
+import { renderTriangleblur } from "../../blur/triangleblur/triangleBlur.js";
 import { renderDefault } from "../../image.js";
 
 const defaultVertexPath = "../../default/default.vs";
@@ -12,7 +12,7 @@ export async function renderUnsharpmask(app: App, name: string, uniformsData: TU
 
     // Blur the current texture, then use the stored texture to detect edges
     app.stage.extraTexture.use(1);
-    await renderTriangleblur(app, '../../blur/triangleblur/triangleblur', { radius: uniformsData["radius"] })
+    await renderTriangleblur(app, '../../blur/triangleblur/triangleblur', { radius: uniformsData["radius"] });
 
     const shader = await app.getAddShader(name, defaultVertexPath);
     shader.textures({

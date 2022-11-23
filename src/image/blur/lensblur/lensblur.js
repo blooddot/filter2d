@@ -30,5 +30,5 @@ export function renderLensblur(app, name, uniformsData) {
     renderDefault(app, "lensBlur2", {
         u_Power: [1 / power],
         u_Delta0: [dir[2]]
-    }, defaultVertexPath, "lensBlur0.fs");
+    }, defaultVertexPath, "lensBlur2.fs");
 }

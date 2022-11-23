@@ -16,7 +16,7 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>zoomblur</h1>
+                <h1>zoomBlur</h1>
                 <h5>Blurs the image away from a certain point, which looks like radial motion blur.</h5>
                 <br>
                 <h6>centerX <i>The x coordinate of the blur origin.</i></h6>
@@ -33,14 +33,12 @@
     <script>
         window.onload = function () {
             window.renderImage([
-                ['zoomblur', {
+                ['zoomBlur', {
                     u_CenterX: [0.5 * window.imageWidth],
                     u_CenterY: [0.5 * window.imageHeight],
                     u_Strength: [0.3, 0, 1, 0.01],
                     u_Width: [window.imageWidth],
                     u_Height: [window.imageHeight]
-                    u_Width: [400],
-                    u_Height: [486]
                 }]]);
         }
     </script>

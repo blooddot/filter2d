@@ -19,12 +19,12 @@
                 <iframe id="webgl"></iframe>
             </div>
             <div class="row-content">
-                <figure class="glsl-figure">
+                <!-- <figure class="glsl-figure">
                     <figcaption>Vertex:</figcaption>
                     <pre class="vscode-container">
                         <code id="vscode" class="language-glsl hljs"></code>
                     </pre>
-                </figure>
+                </figure> -->
                 <figure class="glsl-figure">
                     <figcaption>Fragment:</figcaption>
                     <pre class="fscode-container">
@@ -52,17 +52,21 @@
                 ['noise', 'src/image/adjust/noise/noise.html'],
                 ['saturation', 'src/image/adjust/saturation/saturation.html'],
                 ['sepia', 'src/image/adjust/sepia/sepia.html'],
-                ['unsharpmask', 'src/image/adjust/unsharpmask/unsharpmask.html'],
+                ['unsharpMask', 'src/image/adjust/unsharpMask/unsharpMask.html'],
                 ['vibrance', 'src/image/adjust/vibrance/vibrance.html'],
                 ['vignette', 'src/image/adjust/vignette/vignette.html'],
             ],
             [
                 'blur',
-                ['lensblur', 'src/image/blur/lensblur/lensblur.html'],
-                ['tiltshift', 'src/image/blur/tiltshift/tiltshift.html'],
-                ['triangleblur', 'src/image/blur/triangleblur/triangleblur.html'],
-                ['zoomblur', 'src/image/blur/zoomblur/zoomblur.html'],
+                ['lensBlur', 'src/image/blur/lensBlur/lensBlur.html'],
+                ['tiltShift', 'src/image/blur/tiltShift/tiltShift.html'],
+                ['triangleBlur', 'src/image/blur/triangleBlur/triangleBlur.html'],
+                ['zoomBlur', 'src/image/blur/zoomBlur/zoomBlur.html'],
             ],
+            [
+                'warp',
+                ['bulgePinch', 'src/image/warp/bulgePinch/bulgePinch.html'],
+            ]
         ]
     ];
 
@@ -100,10 +104,10 @@
         webgl.src = selectArrow.href;
         const dir = selectArrow.href.split('/').slice(0, -1).join('/');
 
-        fetchCode(`${dir}/${selectArrow.text}.vs`).then(value => {
-            vscode.innerHTML = value;
-            hljs.highlightElement(vscode);
-        });
+        // fetchCode(`${dir}/${selectArrow.text}.vs`).then(value => {
+        //     vscode.innerHTML = value;
+        //     hljs.highlightElement(vscode);
+        // });
 
         fetchCode(`${dir}/${selectArrow.text}.fs`).then(value => {
             fscode.innerHTML = value;
