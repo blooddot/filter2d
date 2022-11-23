@@ -10,11 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 export function loadFile(url) {
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield fetch(url)
-            .then(response => response.text())
-            .catch(error => {
-            console.error(error);
-        });
-        return content || '';
+            .then(response => response.text());
+        return content;
     });
 }
 export function loadJson(url) {

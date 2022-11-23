@@ -1,11 +1,8 @@
 export async function loadFile(url: string): Promise<string> {
     const content = await fetch(url)
-        .then(response => response.text())
-        .catch(error => {
-            console.error(error)
-        });
+        .then(response => response.text());
 
-    return content || '';
+    return content;
 }
 
 export async function loadJson(url: string): Promise<Record<string, unknown>> {

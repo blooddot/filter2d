@@ -4,4 +4,4 @@ export const gl = (() => {
     canvas.setAttribute('height', '486');
 
     return canvas.getContext('experimental-webgl', { premultipliedAlpha: false }) as WebGLRenderingContext;
-})()
+})();

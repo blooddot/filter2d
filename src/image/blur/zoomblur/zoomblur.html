@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel="stylesheet" type="text/css" href="../../image.css">
+    <title>filter</title>
+</head>
+
+<body>
+    <div class="content">
+        <div class="row-content">
+            <canvas id='webgl'>
+                Please use the browser supporting 'canvas'
+            </canvas>
+            <div>
+                <h1>zoomblur</h1>
+                <h5>Blurs the image away from a certain point, which looks like radial motion blur.</h5>
+                <br>
+                <h6>centerX <i>The x coordinate of the blur origin.</i></h6>
+                <h6>centerY <i>The y coordinate of the blur origin.</i></h6>
+                <h6>strength <i>The strength of the blur. Values in the range 0 to 1 are usually sufficient, where 0
+                        doesn't change the image and 1 creates a highly blurred image.</i></h6>
+                <br>
+                <figure id="input-uniforms" className="figure-uniforms"></figure>
+            </div>
+        </div>
+    </div>
+
+    <script type='module' src='../../image.js'></script>
+    <script>
+        window.onload = function () {
+            window.renderImage([
+                ['zoomblur', {
+                    u_CenterX: [0.5],
+                    u_CenterY: [0.5],
+                    u_Strength: [0.3, 0, 1, 0.01],
+                    u_Width: [400],
+                    u_Height: [486]
+                }]]);
+        }
+    </script>
+</body>
+
+</html>

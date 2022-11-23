@@ -7,7 +7,7 @@ const texturePath = '../../../../resources/hello-world.png';
 window.renderImage = function (data: [string, TUniformsData][]) {
     const app = new App(texturePath, data);
     app.render();
-}
+};
 
 export async function renderDefault(app: App, name: string, uniformsData?: TUniformsData, vertexPath?: string, fragmentPath?: string, textureIn?: Texture, textureOut?: Texture) {
     const shader = await app.getAddShader(name, vertexPath, fragmentPath);

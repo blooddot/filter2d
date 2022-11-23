@@ -147,6 +147,8 @@ module.exports = {
         //Warns for any two overloads that could be unified into one by using a union or an optional/rest parameter
         "@typescript-eslint/unified-signatures": ["error"],
 
+        "@typescript-eslint/ban-ts-comment": 0,
+
         //--------------------------- js/ts 通用
         // 设置了 setter ，必须相应设置 getter ，反之不必须
         // @off 不限制

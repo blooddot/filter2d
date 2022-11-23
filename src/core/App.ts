@@ -12,6 +12,24 @@ export default class App {
     }
     private _texturePath: string;
     private _data: [string, TUniformsData][];
+    public setData(data: [string, TUniformsData][]) {
+        this._data = data;
+        const container = document.getElementById('input-uniforms');
+        container?.childNodes?.forEach((node) => {
+            container.removeChild(node);
+        });
+
+        data.map(value => value[1])
+            .filter(uniforms => !!uniforms)
+            .forEach(uniforms => {
+                Object.keys(uniforms).forEach(key => {
+                    const uniformsValue = uniforms[key];
+                    const [value, min, max, step] = Array.isArray(uniformsValue) ? uniformsValue : [uniformsValue, undefined, undefined, undefined];
+                    const numberInput = this.createNumberInput(key, uniforms, value, min, max, step);
+                    container.appendChild(numberInput);
+                });
+            });
+    }
     private _shaderMap: Map<string, Shader>;
     public getShader(name: string) {
         return this._shaderMap.get(name);
@@ -30,23 +48,11 @@ export default class App {
     public setShader(name: string, shader: Shader) {
         this._shaderMap.set(name, shader);
     }
-    public constructor(texturePath: string, data: [string, TUniformsData][]) {
+    public constructor(texturePath: string, data?: [string, TUniformsData][]) {
         this._texturePath = texturePath;
-        this._data = data;
         this._stage = new Stage();
         this._shaderMap = new Map();
-
-        const container = document.getElementById('input-uniforms');
-        data.map(value => value[1])
-            .filter(uniforms => !!uniforms)
-            .forEach(uniforms => {
-                Object.keys(uniforms).forEach(key => {
-                    const uniformsValue = uniforms[key];
-                    const [value, min, max, step] = Array.isArray(uniformsValue) ? uniformsValue : [uniformsValue, undefined, undefined, undefined];
-                    const numberInput = this.createNumberInput(key, uniforms, value, min, max, step);
-                    container.appendChild(numberInput);
-                });
-            });
+        this.setData(data);
     }
 
     private createNumberInput(name: string, uniforms: TUniformsData, value: unknown, min?: number, max?: number, step?: number) {
@@ -72,7 +78,7 @@ export default class App {
 
         input.value = String(value);
 
-        let range: HTMLInputElement
+        let range: HTMLInputElement;
         if (min !== undefined && max !== undefined) {
             range = document.createElement('input');
             range.className = "input-range";
@@ -115,7 +121,7 @@ export default class App {
         return container;
     }
 
-    public async render(texturePath: string = this._texturePath, data: [string, TUniformsData][] = this._data) {
+    public async render(data: [string, TUniformsData][] = this._data, texturePath: string = this._texturePath) {
         if (!this._texture || this._texturePath !== texturePath) {
             this._texturePath = texturePath;
             this._texture = await Texture.from(texturePath);

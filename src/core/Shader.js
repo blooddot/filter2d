@@ -73,7 +73,7 @@ export default class Shader {
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            throw 'compile error: ' + gl.getShaderInfoLog(shader);
+            throw new Error('compile error: ' + gl.getShaderInfoLog(shader));
         }
         return shader;
     }
@@ -107,7 +107,7 @@ export default class Shader {
                         gl.uniformMatrix4fv(location, false, new Float32Array(value));
                         break;
                     default:
-                        throw `dont\'t know how to load uniform ${key} of length ${value.length}`;
+                        throw new Error(`don't know how to load uniform ${key} of length ${value.length}`);
                 }
                 return;
             }
@@ -119,7 +119,7 @@ export default class Shader {
                 gl.uniform1i(location, value ? 1 : 0);
                 return;
             }
-            throw `attempted to set uniform ${key} to invalid value ${value || undefined}`;
+            throw new Error(`attempted to set uniform ${key} to invalid value ${value || undefined}`);
         });
         return this;
     }

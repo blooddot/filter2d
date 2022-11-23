@@ -16,13 +16,14 @@
         "redflower",
         "Renderbuffers",
         "rlen",
-        "triangleblur",
         "tiltshift",
+        "triangleblur",
         "tscode",
         "unsharpmask",
         "unuse",
         "vshader",
         "xform",
-        "Zfighting"
+        "Zfighting",
+        "zoomblur"
     ]
 }

@@ -15,10 +15,20 @@ import { renderCfgMap } from "./Config.js";
 export default class App {
     constructor(texturePath, data) {
         this._texturePath = texturePath;
-        this._data = data;
         this._stage = new Stage();
         this._shaderMap = new Map();
+        this.setData(data);
+    }
+    get stage() {
+        return this._stage;
+    }
+    setData(data) {
+        var _a;
+        this._data = data;
         const container = document.getElementById('input-uniforms');
+        (_a = container === null || container === void 0 ? void 0 : container.childNodes) === null || _a === void 0 ? void 0 : _a.forEach((node) => {
+            container.removeChild(node);
+        });
         data.map(value => value[1])
             .filter(uniforms => !!uniforms)
             .forEach(uniforms => {
@@ -29,9 +39,6 @@ export default class App {
                 container.appendChild(numberInput);
             });
         });
-    }
-    get stage() {
-        return this._stage;
     }
     getShader(name) {
         return this._shaderMap.get(name);
@@ -108,7 +115,7 @@ export default class App {
         });
         return container;
     }
-    render(texturePath = this._texturePath, data = this._data) {
+    render(data = this._data, texturePath = this._texturePath) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this._texture || this._texturePath !== texturePath) {
                 this._texturePath = texturePath;
