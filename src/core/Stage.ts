@@ -4,10 +4,22 @@ import Texture from "./Texture.js";
 
 export default class Stage {
     private _texture: Texture;
+    public get texture() {
+        return this._texture;
+    }
     private _spareTexture: Texture;
     private _extraTexture: Texture;
+    public get extraTexture() {
+        return this._extraTexture;
+    }
     private _width: number;
+    public get width(): number {
+        return this._width;
+    }
     private _height: number;
+    public get height(): number {
+        return this._height;
+    }
     private _flippedShader: Shader;
     private _isInitialized: boolean;
 

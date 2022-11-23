@@ -62,9 +62,9 @@ export default class Shader {
         Shader._defaultShader = Shader._defaultShader || new Shader();
         return Shader._defaultShader;
     }
-    static from(name) {
+    static from(vertexPath, fragmentPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { vertex, fragment } = yield loadGLSL(name);
+            const { vertex, fragment } = yield loadGLSL(vertexPath, fragmentPath);
             return new Shader(vertex, fragment);
         });
     }

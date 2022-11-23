@@ -49,8 +49,9 @@ export default class Shader {
         return Shader._defaultShader;
     }
 
-    public static async from(name: string) {
-        const { vertex, fragment } = await loadGLSL(name);
+    public static async from(vertexPath: string, fragmentPath: string) {
+        const { vertex, fragment } = await loadGLSL(vertexPath, fragmentPath);
+
         return new Shader(vertex, fragment);
     }
 

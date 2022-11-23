@@ -2,6 +2,18 @@ import { gl } from "./constant.js";
 import Shader from "./Shader.js";
 import Texture from "./Texture.js";
 export default class Stage {
+    get texture() {
+        return this._texture;
+    }
+    get extraTexture() {
+        return this._extraTexture;
+    }
+    get width() {
+        return this._width;
+    }
+    get height() {
+        return this._height;
+    }
     initialize(width, height) {
         var _a, _b;
         const type = gl.UNSIGNED_BYTE;

@@ -40,8 +40,8 @@
         [
             'image filters',
             [
-                'normal',
-                ['normal', 'src/image/normal/normal.html']
+                'default',
+                ['default', 'src/image/default/default.html']
             ],
             [
                 'adjust',
@@ -55,18 +55,26 @@
                 ['vibrance', 'src/image/adjust/vibrance/vibrance.html'],
                 ['vignette', 'src/image/adjust/vignette/vignette.html'],
             ],
-            // [
-            //     'Distortion and Warping Filters',
-            // ],
+            [
+                'blur',
+                ['lensblur', 'src/image/blur/lensblur/lensblur.html']
+            ],
         ]
     ];
 
     async function fetchCode(path) {
-        return fetch(path).then(res => {
-            if (!res.ok) return '';
+        return fetch(path)
+            .then(res => {
+                if (!res.ok) return '';
 
-            return res.text()
-        });
+                return res.text()
+            })
+            .catch(err => {
+                return '';
+            })
+            .finally(() => {
+                return '';
+            });
     }
 
     function createDetails(title, index, detailsClass = '') {
