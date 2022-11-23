@@ -16,7 +16,14 @@
                 Please use the browser supporting 'canvas'
             </canvas>
             <div>
-                <h1>denoise (降噪)</h1>
+                <h1>bulgePinch</h1>
+                <h5>Blurs the image away from a certain point, which looks like radial motion blur.</h5>
+                <br>
+                <h6>centerX <i>The x coordinate of the blur origin.</i></h6>
+                <h6>centerY <i>The y coordinate of the blur origin.</i></h6>
+                <h6>strength <i>The strength of the blur. Values in the range 0 to 1 are usually sufficient, where 0
+                        doesn't change the image and 1 creates a highly blurred image.</i></h6>
+                <br>
                 <figure id="input-uniforms" className="figure-uniforms"></figure>
             </div>
         </div>
@@ -26,12 +33,14 @@
     <script>
         window.onload = function () {
             window.renderImage([
-                ['denoise', {
-                    u_Strength: [0.5, 0, 1, 0.01],
+                ['bulgePinch', {
+                    u_CenterX: [0.5 * window.imageWidth],
+                    u_CenterY: [0.5 * window.imageHeight],
+                    u_Radius: [200, 0, 600, 1],
+                    u_Strength: [0.5, -1, 1, 0.01],
                     u_Width: [window.imageWidth],
                     u_Height: [window.imageHeight]
-                }]
-            ]);
+                }]]);
         }
     </script>
 </body>

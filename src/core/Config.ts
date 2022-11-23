@@ -9,4 +9,4 @@ export const renderCfgMap: Map<string, (app: App, name: string, uniformsData?: T
     ["tiltshift", renderTiltshift],
     ["unsharpmask", renderUnsharpmask],
     ["triangleblur", renderTriangleblur],
-]) 
+]);
