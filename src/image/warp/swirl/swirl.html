@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel="stylesheet" type="text/css" href="../../image.css">
+    <title>filter</title>
+</head>
+
+<body>
+    <div class="content">
+        <div class="row-content">
+            <canvas id='webgl'>
+                Please use the browser supporting 'canvas'
+            </canvas>
+            <div>
+                <h1>swirl</h1>
+                <h5>Warps a circular region of the image in a swirl.</h5>
+                <br>
+                <h6>centerX <i>The x coordinate of the blur origin.</i></h6>
+                <h6>centerY <i>The y coordinate of the blur origin.</i></h6>
+                <h6>radius <i>The radius of the circular region.</i></h6>
+                <h6>angle <i>The angle in radians that the pixels in the center of the circular region will be rotated
+                        by.</i></h6>
+                <br>
+                <figure id="input-uniforms" className="figure-uniforms"></figure>
+            </div>
+        </div>
+    </div>
+
+    <script type='module' src='../../image.js'></script>
+    <script>
+        window.onload = function () {
+            window.renderImage('swirl', {
+                u_CenterX: [0.5 * window.imageWidth],
+                u_CenterY: [0.5 * window.imageHeight],
+                u_Width: [window.imageWidth],
+                u_Height: [window.imageHeight],
+                u_Radius: [200, 0, 600, 1],
+                u_Angle: [3, -25, 25, 0.1]
+            });
+        }
+    </script>
+</body>
+
+</html>
