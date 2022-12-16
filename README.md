@@ -5,3 +5,7 @@
 ## glfx.js
 
 https://evanw.github.io/glfx.js/demo/
+
+## webgl-filter
+
+https://github.com/evanw/webgl-filter.git
